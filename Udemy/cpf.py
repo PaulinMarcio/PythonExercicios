@@ -24,29 +24,39 @@ contrário disso:
 O primeiro dígito do CPF é 7
 """
 
-cpf_mult = [10, 9, 8, 7, 6, 5, 4, 3, 2]
-cpf = input('insira o seu cpf: ')
-cpf_res = 0
+cpf_mult_primeiro = [10, 9, 8, 7, 6, 5, 4, 3, 2] # números para a multiplicação
+cpf_mult_segundo = [11, 10, 9, 8, 7, 6, 5, 4, 3, 2] # números para a multiplicação
+cpf = input('insira o seu cpf: ') # cpf do usuário
+cpf_res_primeiro = 0 # resultado primeiro número
+cpf_res_segundo = 0 # resultado segundo número
 
 cpf_num = cpf # não mexe no cpf original
-cpf_num = cpf_num.replace('.', '') # remove os pontos
-cpf_num = cpf_num.replace('-', '') # remove o traço
+cpf_num = cpf_num.split() # separa eles
 
-try:
-    cpf_num = cpf_num.replace("", ",").lstrip(',').rstrip(',').split(',') # adiciona as virgulas entre os números e separa eles
-    for num in range(len(cpf_num)):
-        cpf_num[num] = int(cpf_num[num]) # transforma de string para int
-except Exception: 
-    print("Erro")
+for num in range(len(cpf_num)):
+    cpf_num[num] = int(cpf_num[num])
 
-for num in range(len(cpf_mult)):
-    cpf_mult_res = cpf_mult[num] * cpf_num[num] # multiplicação de cada número
-    cpf_res += cpf_mult_res # soma dos resultados das multiplicações
-    print(f'{cpf_mult[num]} * {cpf_num[num]} = {cpf_mult_res}')
 
-cpf_res = cpf_res * 10 # resultado multiplicado por 10
-cpf_res = cpf_res % 11 # e tirado o resto da divisão por 11
+for num in range(len(cpf_mult_primeiro)):
+    cpf_num[num] = int(cpf_num[num]) # transforma de string para int
+    cpf_mult_res = cpf_mult_primeiro[num] * cpf_num[num] # multiplicação de cada número
+    cpf_res_primeiro += cpf_mult_res # soma dos resultados das multiplicações
 
-cpf_res = 0 if cpf_res > 9 else cpf_res # se o resultado for maior que 9, transformar em zero
 
-print(cpf_res) # primeiro digito do cpf
+cpf_res_primeiro = (cpf_res_primeiro * 10) % 11 # resultado multiplicado por 10 e tirado o resto da divisão por 11
+
+cpf_res_primeiro = 0 if cpf_res_primeiro > 9 else cpf_res_primeiro # se o resultado for maior que 9, transformar em zero
+
+print(cpf_res_primeiro) # primeiro digito do cpf
+
+for num in range(len(cpf_mult_segundo)):
+    cpf_num[num] = int(cpf_num[num]) # transforma de string para int
+    cpf_mult_res = cpf_mult_segundo[num] * cpf_num[num] # multiplicação de cada número
+    cpf_res_segundo += cpf_mult_res # soma dos resultados das multiplicações
+
+cpf_res_segundo = (cpf_res_segundo * 10) % 11 # resultado multiplicado por 10 e tirado o resto da divisão por 11
+
+cpf_res_segundo = 0 if cpf_res_segundo > 9 else cpf_res_segundo # se o resultado for maior que 9, transformar em zero
+print(cpf_res_segundo)
+
+print(cpf_num)

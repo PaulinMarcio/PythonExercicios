@@ -1,7 +1,6 @@
 import requests, json
 from google.oauth2 import service_account
 from google.auth.transport.requests import AuthorizedSession
-# API_KEY = 'AIzaSyAoWF9e6mI-2Piz5WBxTHbuu2bGYKyu7_w'
 # url = 'https://www.googleapis.com/identitytoolkit/v3/relyingparty/verifyPassword?key=' + API_KEY
 # data = {"email": 'paulin.marcio@outlook.com', "password": 'Haineko33', "returnSecureToken": True}
 # res = requests.post(url, data)

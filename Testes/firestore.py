@@ -24,6 +24,13 @@ def coll_req(auth, base_url, project, coll_name):
         coll_data.append(user)
     return coll_data
 
+def renaming(name):
+    name = json.dumps(name)
+    name = name[1:-1]
+    index = name.rindex("/") + 1
+    name = name[index:]
+    return name
+
 
 def get_users(auth):
     base_url = "https://firestore.googleapis.com"
@@ -34,31 +41,10 @@ def get_users(auth):
     coll_roles = coll_req(auth, base_url, project, "roles")
     coll_auth = coll_req(auth, base_url, project, "authorization")
 
-    # uid = []
-    # for id in coll_users:
-    #     user_id = id["name"]
-    #     user_id = user_id[-28:]
-    #     user_id_json = json.dumps(user_id)
-    #     user_id_json = user_id_json[1:-1]
-    #     uid.append(user_id_json)
-
-    # body = {"localId": uid}
-    # email = auth.post(f"https://identitytoolkit.googleapis.com/v1/accounts:lookup", body)
-    # email_json = email.json()
-    # emails = []
-    # for user_email in email_json["users"]:
-    #     emails.append(user_email["email"])
-
-    # print(json.dumps(emails, indent=4))
-    # print(json.dumps(coll_users, indent=4))
-    # print(json.dumps(coll_groups, indent=4))
-    # print(json.dumps(coll_roles, indent=4))
-    # print(json.dumps(coll_auth, indent=4))
-
     for user in coll_users:
         groups = []
         roles = []
-        authentications = []
+        authentications = []        
         full_user = {
             "id": "",
             "email": "",
@@ -81,24 +67,44 @@ def get_users(auth):
         )
         email = email.json()
 
-
+        #For para puxar os grupos dentro do usuário
         for group in user["fields"]["groups"]["arrayValue"]["values"]:
+            group_dict = {}
+            role_authentications = []
             group_id = group["referenceValue"]
-            group_id = json.dumps(group_id)
-            group_id = group_id[1:-1]
-            index = group_id.rindex("/") + 1
-            group_id = group_id[index:]
-            groups.append(group_id)
+            group_id = renaming(group_id)
+            #For para puxar as roles dentro de cada grupo
             for group_role in coll_groups:
-                if group_id == group_role["name"]:
-                
-                    
-        
+                group_name = group_role["name"]
+                group_name = renaming(group_name)
+                #If para comparar se o nome do grupo é o mesmo entre o grupo do usuário e o grupo da collection
+                if group_id == group_name:
+                    group_roles = []
+                    i = 0
+                    role_name = group_role["fields"]["roles"]["arrayValue"]["values"]
+                    #Passando por todas as roles dentro de um grupo do usuário
+                    while i < len(role_name):
+                        role_dict = {}
+                        role = role_name[i]["referenceValue"]
+                        role = renaming(role)
+                        role_dict["role_id"] = role
+                        role_dict["role_authorizations"] = {}
+                        i += 1
+                        group_roles.append(role_dict)
+                        for roles in coll_roles:
+                            role = roles["name"]
+                            role = renaming(role)
+                            if role_name == role:
+                                ...
+            group_dict["group_id"] = group_id
+            group_dict["group_roles"] = group_roles
+            groups.append(group_dict)
 
         full_user["id"] = id
         full_user["email"] = email["users"][0]["email"]
         full_user["groups"] = groups
-        print(full_user)
+        print(json.dumps(full_user, indent=4))
+    return full_user
 
 
 get_users(get_auth())
